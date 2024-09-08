@@ -27,6 +27,12 @@
 (require 'olivetti)
 (add-hook 'org-mode-hook 'olivetti-mode)  ;; Enable olivetti-mode in Org files
 
+(straight-use-package '(real-auto-save :type git :host github :repo "ChillarAnand/real-auto-save"))
+
+(require 'real-auto-save)
+(add-hook 'org-mode-hook 'real-auto-save-mode)
+(setq real-auto-save-interval 5) ;; in seconds
+
 ;; --- CUSTOMIZE PART ---
 
 (custom-set-variables
@@ -55,7 +61,7 @@
 (define-key global-map "\C-ca" 'org-agenda)      ;; C-c a to open the agenda
 
 ;; Set the agenda files (adjust path to your system)
-(setq org-agenda-files (list "C:/Users/valen/org-mode/misc.org"))
+(setq org-agenda-files (list "~/org-mode/misc.org"))
 
 ;; Customize fringe appearance in olivetti
 (set-face-attribute 'olivetti-fringe nil :background "white smoke")
@@ -71,7 +77,7 @@
 (add-hook 'org-mode-hook (lambda () (org-superstar-mode 1)))  ;; Enable org-superstar in Org files
 
 ;; Customize heading bullets in org-superstar-mode
-(setq org-superstar-headline-bullets-list '("○" "►" "▪" "▫" "▫" "▫" "▫" "▫"))
+(setq org-superstar-headline-bullets-list '(" " ">" "▪" "▫" "▫" "▫" "▫" "▫"))
 
 ;; --- TEXT ENCODING SETTINGS ---
 
@@ -84,7 +90,7 @@
 
 ;; Display heading levels as numbered, up to level 2
 (setq org-startup-numerated t)
-(setq org-num-max-level 2)
+(setq org-num-max-level 1)
 
 ;; --- ORG TODO & DONE CUSTOMIZATION ---
 
@@ -119,7 +125,7 @@
     :weight 'bold)
 
 (set-face-attribute 'org-level-3 nil
-    :weight 'bold)
+    :weight 'normal)
 
 (set-face-attribute 'org-level-4 nil
     :weight 'normal)
@@ -154,3 +160,25 @@
 (setq calendar-week-start-day 1)
 
 (global-auto-revert-mode t)
+
+(setq inhibit-startup-screen t)
+(find-file "~/org-mode/misc.org")
+(switch-to-buffer (get-buffer "misc.org"))
+
+(setq org-hide-emphasis-markers t)
+
+(setq org-agenda-custom-commands
+      '(("p" "Liste des tâches"
+         ((tags-todo "+PRIORITY=\"A\""
+                     ((org-agenda-skip-function '(org-agenda-skip-entry-if 'todo 'done))
+                      (org-agenda-overriding-header "Urgent")))
+          (tags-todo "+PRIORITY=\"B\""
+                     ((org-agenda-skip-function '(org-agenda-skip-entry-if 'todo 'done))
+                      (org-agenda-overriding-header "A faire")))
+          (tags-todo "+PRIORITY=\"C\""
+                     ((org-agenda-skip-function '(org-agenda-skip-entry-if 'todo 'done))
+                      (org-agenda-overriding-header "Autre")))
+          (tags-todo "-PRIORITY=\"A\"-PRIORITY=\"B\"-PRIORITY=\"C\""
+                     ((org-agenda-skip-function '(org-agenda-skip-entry-if 'todo 'done))
+                      (org-agenda-overriding-header "Other TODOs (No Priority)")))
+          ))))
